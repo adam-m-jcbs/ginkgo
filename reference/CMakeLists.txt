@@ -4,8 +4,8 @@ target_sources(ginkgo_reference
         base/version.cpp
         components/precision_conversion.cpp
         components/prefix_sum.cpp
-        factorization/ilu_kernels.cpp
         factorization/factorization_kernels.cpp
+        factorization/ilu_kernels.cpp
         factorization/par_ilu_kernels.cpp
         matrix/coo_kernels.cpp
         matrix/csr_kernels.cpp
@@ -16,6 +16,7 @@ target_sources(ginkgo_reference
         matrix/sparsity_csr_kernels.cpp
         preconditioner/isai_kernels.cpp
         preconditioner/jacobi_kernels.cpp
+        multigrid/amgx_pgm_kernels.cpp
         solver/bicg_kernels.cpp
         solver/bicgstab_kernels.cpp
         solver/cg_kernels.cpp

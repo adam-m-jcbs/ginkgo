@@ -511,7 +511,7 @@ void Csr<ValueType, IndexType>::extract_diag(Array<ValueType> &diag) const
 
 template <typename ValueType, typename IndexType>
 void Csr<ValueType, IndexType>::find_strongest_neighbor(
-    const Array<ValueType> &diag, const Array<IndexType> &agg,
+    const Array<ValueType> &diag, Array<IndexType> &agg,
     Array<IndexType> &strongest_neighbor) const
 {
     auto exec = this->get_executor();

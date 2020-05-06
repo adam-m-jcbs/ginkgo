@@ -747,7 +747,7 @@ public:
 
     void extract_diag(Array<ValueType> &diag) const override;
     void find_strongest_neighbor(
-        const Array<ValueType> &diag, const Array<IndexType> &agg,
+        const Array<ValueType> &diag, Array<IndexType> &agg,
         Array<IndexType> &strongest_neighbor) const override;
     void assign_to_exist_agg(const Array<ValueType> &diag,
                              Array<IndexType> &agg) const override;

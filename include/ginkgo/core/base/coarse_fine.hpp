@@ -124,7 +124,7 @@ class AmgxPgmOp {
 public:
     virtual void extract_diag(Array<ValueType> &diag) const = 0;
     virtual void find_strongest_neighbor(
-        const Array<ValueType> &diag, const Array<IndexType> &agg,
+        const Array<ValueType> &diag, Array<IndexType> &agg,
         Array<IndexType> &strongest_neighbor) const = 0;
     virtual void assign_to_exist_agg(const Array<ValueType> &diag,
                                      Array<IndexType> &agg) const = 0;

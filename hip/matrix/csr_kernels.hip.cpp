@@ -1157,7 +1157,7 @@ template <typename ValueType, typename IndexType>
 void find_strongest_neighbor(std::shared_ptr<const HipExecutor> exec,
                              const matrix::Csr<ValueType, IndexType> *source,
                              const Array<ValueType> &diag,
-                             const Array<IndexType> &agg,
+                             Array<IndexType> &agg,
                              Array<IndexType> &strongest_neighbor)
 {
     GKO_NOT_IMPLEMENTED;

@@ -175,7 +175,7 @@ namespace kernels {
     void find_strongest_neighbor(                                     \
         std::shared_ptr<const DefaultExecutor> exec,                  \
         const matrix::Csr<ValueType, IndexType> *source,              \
-        const Array<ValueType> &diag, const Array<IndexType> &agg,    \
+        const Array<ValueType> &diag, Array<IndexType> &agg,          \
         Array<IndexType> &strongest_neighbor)
 
 #define GKO_DECLARE_CSR_ASSIGN_TO_EXIST_AGG(ValueType, IndexType)             \

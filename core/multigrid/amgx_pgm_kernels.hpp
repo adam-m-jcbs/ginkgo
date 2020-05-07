@@ -52,13 +52,13 @@ namespace amgx_pgm {
 
 #define GKO_DECLARE_AMGX_PGM_RESTRICT_APPLY_KERNEL(_vtype, _itype)             \
     void restrict_apply(                                                       \
-        std::shared_ptr<const DefaultExecutor> exec, const Array<_itype> *agg, \
+        std::shared_ptr<const DefaultExecutor> exec, const Array<_itype> &agg, \
         const matrix::Dense<_vtype> *b, matrix::Dense<_vtype> *x)
 
 
 #define GKO_DECLARE_AMGX_PGM_PROLONGATE_APPLY_KERNEL(_vtype, _itype)           \
     void prolongate_applyadd(                                                  \
-        std::shared_ptr<const DefaultExecutor> exec, const Array<_itype> *agg, \
+        std::shared_ptr<const DefaultExecutor> exec, const Array<_itype> &agg, \
         const matrix::Dense<_vtype> *b, matrix::Dense<_vtype> *x)
 
 

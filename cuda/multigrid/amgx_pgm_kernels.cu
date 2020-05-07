@@ -64,7 +64,7 @@ namespace amgx_pgm {
 
 template <typename ValueType, typename IndexType>
 void restrict_apply(std::shared_ptr<const CudaExecutor> exec,
-                    const Array<IndexType> *agg,
+                    const Array<IndexType> &agg,
                     const matrix::Dense<ValueType> *b,
                     matrix::Dense<ValueType> *x) GKO_NOT_IMPLEMENTED;
 
@@ -74,7 +74,7 @@ GKO_INSTANTIATE_FOR_EACH_VALUE_AND_INDEX_TYPE(
 
 template <typename ValueType, typename IndexType>
 void prolongate_applyadd(std::shared_ptr<const CudaExecutor> exec,
-                         const Array<IndexType> *agg,
+                         const Array<IndexType> &agg,
                          const matrix::Dense<ValueType> *b,
                          matrix::Dense<ValueType> *x) GKO_NOT_IMPLEMENTED;
 

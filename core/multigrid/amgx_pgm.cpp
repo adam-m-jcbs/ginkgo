@@ -74,7 +74,7 @@ void AmgxPgm<ValueType, IndexType>::generate()
     const auto amgxpgm_op =
         as<AmgxPgmOp<ValueType, IndexType>>(this->system_matrix_.get());
     amgxpgm_op->extract_diag(diag);
-    IndexType num_assign;
+    size_type num_assign;
     for (int i = 0; i < parameters_.max_iterations; i++) {
         // Find the strongest neighbor of each row
         amgxpgm_op->find_strongest_neighbor(diag, agg, strongest_neighbor);

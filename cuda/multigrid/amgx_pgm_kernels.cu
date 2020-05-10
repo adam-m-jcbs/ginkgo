@@ -93,7 +93,7 @@ GKO_INSTANTIATE_FOR_EACH_INDEX_TYPE(GKO_DECLARE_AMGX_PGM_MATCH_EDGE_KERNEL);
 template <typename IndexType>
 void count_unagg(std::shared_ptr<const CudaExecutor> exec,
                  const Array<IndexType> &agg,
-                 IndexType *num_unagg) GKO_NOT_IMPLEMENTED;
+                 size_type *num_unagg) GKO_NOT_IMPLEMENTED;
 
 GKO_INSTANTIATE_FOR_EACH_INDEX_TYPE(GKO_DECLARE_AMGX_PGM_COUNT_UNAGG_KERNEL);
 

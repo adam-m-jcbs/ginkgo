@@ -75,20 +75,20 @@ protected:
                               .with_max_unassigned_percentage(0.1)
                               .on(exec)),
           fine_b(gko::initialize<Vec>(
-              {I<T>{2.0, -1.0}, I<T>{-1.0, 2.0}, I<T>{0.0, -1.0},
-               I<T>{3.0, -2.0}, I<T>{-2.0, 1.0}},
+              {I<T>({2.0, -1.0}), I<T>({-1.0, 2.0}), I<T>({0.0, -1.0}),
+               I<T>({3.0, -2.0}), I<T>({-2.0, 1.0})},
               exec)),
-          coarse_b(gko::initialize<Vec>(
-              {I<T>{2.0, -1.0}, I<T>{0.0, -1.0}, I<T>{-2.0, 1.0}}, exec)),
+          coarse_b(gko::initialize<Vec>({I<T>({2.0, -1.0}), I<T>({0.0, -1.0})},
+                                        exec)),
           restrict_ans((gko::initialize<Vec>(
-              {I<T>{2.0, -2.0}, I<T>{2.0, 0.0}, I<T>{-2.0, 1.0}}, exec))),
+              {I<T>({0.0, -1.0}), I<T>({2.0, 0.0})}, exec))),
           prolongate_ans(gko::initialize<Vec>(
-              {I<T>{0.0, -2.0}, I<T>{1.0, -2.0}, I<T>{1.0, -2.0},
-               I<T>{0.0, -1.0}, I<T>{-2.0, 3.0}},
+              {I<T>({0.0, -2.0}), I<T>({1.0, -2.0}), I<T>({1.0, -2.0}),
+               I<T>({0.0, -1.0}), I<T>({2.0, 1.0})},
               exec)),
           fine_x(gko::initialize<Vec>(
-              {I<T>{-2.0, -1.0}, I<T>{1.0, -1.0}, I<T>{-1.0, -1.0},
-               I<T>{0.0, 0.0}, I<T>{0.0, 2.0}},
+              {I<T>({-2.0, -1.0}), I<T>({1.0, -1.0}), I<T>({-1.0, -1.0}),
+               I<T>({0.0, 0.0}), I<T>({0.0, 2.0})},
               exec)),
           mtx(Mtx::create(exec, gko::dim<2>(5, 5), 15,
                           std::make_shared<typename Mtx::classical>())),
@@ -162,7 +162,7 @@ protected:
         agg_val[1] = 1;
         agg_val[2] = 0;
         agg_val[3] = 1;
-        agg_val[4] = 2;
+        agg_val[4] = 0;
     }
 
     std::shared_ptr<const gko::ReferenceExecutor> exec;
@@ -267,7 +267,7 @@ TYPED_TEST(AmgxPgm, Renumber)
 }
 
 
-TYPED_TEST(AmgxPgm, GenerateWithIter2)
+TYPED_TEST(AmgxPgm, GenerateWith)
 {
     auto coarse_fine = this->AmgxPgm_factory->generate(this->mtx);
 
@@ -278,6 +278,34 @@ TYPED_TEST(AmgxPgm, GenerateWithIter2)
     ASSERT_EQ(agg_result[2], 0);
     ASSERT_EQ(agg_result[3], 1);
     ASSERT_EQ(agg_result[4], 0);
+}
+
+
+TYPED_TEST(AmgxPgm, CoarseFineRestrictApply)
+{
+    std::unique_ptr<gko::CoarseFine> amgx_pgm{
+        this->AmgxPgm_factory->generate(this->mtx)};
+
+    // fine->coarse
+    using Vec = typename TestFixture::Vec;
+    using value_type = typename TestFixture::value_type;
+    auto x = Vec::create_with_config_of(gko::lend(this->coarse_b));
+    amgx_pgm->restrict_apply(this->fine_b.get(), x.get());
+    GKO_ASSERT_MTX_NEAR(x, this->restrict_ans,
+                        gko::remove_complex<value_type>{0});
+}
+
+
+TYPED_TEST(AmgxPgm, CoarseFineProlongateApplyadd)
+{
+    std::unique_ptr<gko::CoarseFine> amgx_pgm{
+        this->AmgxPgm_factory->generate(this->mtx)};
+
+    using value_type = typename TestFixture::value_type;
+    auto x = gko::clone(this->fine_x);
+    amgx_pgm->prolongate_applyadd(this->coarse_b.get(), x.get());
+    GKO_ASSERT_MTX_NEAR(x, this->prolongate_ans,
+                        gko::remove_complex<value_type>{0});
 }
 
 

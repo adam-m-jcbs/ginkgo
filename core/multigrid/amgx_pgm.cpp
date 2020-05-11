@@ -97,15 +97,35 @@ void AmgxPgm<ValueType, IndexType>::generate()
     size_type num_agg;
     // Renumber the index
     exec->run(amgx_pgm::make_renumber(agg_, &num_agg));
-    amgxpgm_op->amgx_pgm_generate(num_agg, agg_);
-    // this->set_coarse_fine();
+    auto coarse = amgxpgm_op->amgx_pgm_generate(num_agg, agg_);
+    this->set_coarse_fine(
+        std::move(coarse),
+        std::bind(&AmgxPgm::restrict_apply_impl, this, std::placeholders::_1,
+                  std::placeholders::_2),
+        std::bind(&AmgxPgm::prolongate_applyadd_impl, this,
+                  std::placeholders::_1, std::placeholders::_2),
+        num);
 }
 
 template <typename ValueType, typename IndexType>
-void restrict_apply_impl(const LinOp *b, LinOp *x) GKO_NOT_IMPLEMENTED;
+void AmgxPgm<ValueType, IndexType>::restrict_apply_impl(const LinOp *b,
+                                                        LinOp *x) const
+{
+    auto exec = this->get_executor();
+    exec->run(amgx_pgm::make_restrict_apply(agg_,
+                                            as<matrix::Dense<ValueType>>(b),
+                                            as<matrix::Dense<ValueType>>(x)));
+}
 
 template <typename ValueType, typename IndexType>
-void prolongate_applyadd_impl(const LinOp *b, LinOp *x) GKO_NOT_IMPLEMENTED;
+void AmgxPgm<ValueType, IndexType>::prolongate_applyadd_impl(const LinOp *b,
+                                                             LinOp *x) const
+{
+    auto exec = this->get_executor();
+    exec->run(amgx_pgm::make_prolongate_applyadd(
+        agg_, as<matrix::Dense<ValueType>>(b),
+        as<matrix::Dense<ValueType>>(x)));
+}
 
 #define GKO_DECLARE_AMGX_PGM(_vtype, _itype) class AmgxPgm<_vtype, _itype>
 GKO_INSTANTIATE_FOR_EACH_VALUE_AND_INDEX_TYPE(GKO_DECLARE_AMGX_PGM);

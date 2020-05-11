@@ -110,6 +110,15 @@ public:
     }
 
 
+    IndexType *get_agg() noexcept { return agg_.get_data(); }
+
+
+    const IndexType *get_const_agg() const noexcept
+    {
+        return agg_.get_const_data();
+    }
+
+
     GKO_CREATE_FACTORY_PARAMETERS(parameters, Factory)
     {
         unsigned GKO_FACTORY_PARAMETER(max_iterations, 15);
@@ -138,7 +147,7 @@ protected:
 private:
     std::shared_ptr<const LinOp> system_matrix_{};
     Array<ValueType> diag_;
-    Array<index_type> agg_;
+    Array<IndexType> agg_;
 };
 
 

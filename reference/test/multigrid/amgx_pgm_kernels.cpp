@@ -71,7 +71,7 @@ protected:
     AmgxPgm()
         : exec(gko::ReferenceExecutor::create()),
           AmgxPgm_factory(Multigrid::build()
-                              .with_max_iterations(2)
+                              .with_max_iterations(2u)
                               .with_max_unassigned_percentage(0.1)
                               .on(exec)),
           fine_b(gko::initialize<Vec>(
@@ -264,6 +264,20 @@ TYPED_TEST(AmgxPgm, Renumber)
     ASSERT_EQ(agg_val[2], 0);
     ASSERT_EQ(agg_val[3], 1);
     ASSERT_EQ(agg_val[4], 2);
+}
+
+
+TYPED_TEST(AmgxPgm, GenerateWithIter2)
+{
+    auto coarse_fine = this->AmgxPgm_factory->generate(this->mtx);
+
+    auto agg_result = coarse_fine->get_const_agg();
+
+    ASSERT_EQ(agg_result[0], 0);
+    ASSERT_EQ(agg_result[1], 1);
+    ASSERT_EQ(agg_result[2], 0);
+    ASSERT_EQ(agg_result[3], 1);
+    ASSERT_EQ(agg_result[4], 0);
 }
 
 

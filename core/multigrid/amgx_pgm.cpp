@@ -53,6 +53,7 @@ namespace amgx_pgm {
 
 GKO_REGISTER_OPERATION(restrict_apply, amgx_pgm::restrict_apply);
 GKO_REGISTER_OPERATION(prolongate_applyadd, amgx_pgm::prolongate_applyadd);
+GKO_REGISTER_OPERATION(initial, amgx_pgm::initial);
 GKO_REGISTER_OPERATION(match_edge, amgx_pgm::match_edge);
 GKO_REGISTER_OPERATION(count_unagg, amgx_pgm::count_unagg);
 GKO_REGISTER_OPERATION(renumber, amgx_pgm::renumber);
@@ -70,33 +71,33 @@ void AmgxPgm<ValueType, IndexType>::generate()
     const auto num = this->system_matrix_->get_size()[0];
     Array<ValueType> diag(this->get_executor(), num);
     Array<IndexType> strongest_neighbor(this->get_executor(), num);
-    Array<IndexType> agg(this->get_executor(), num);
     const auto amgxpgm_op =
         as<AmgxPgmOp<ValueType, IndexType>>(this->system_matrix_.get());
+    exec->run(amgx_pgm::make_initial(agg_));
     amgxpgm_op->extract_diag(diag);
-    size_type num_assign;
+    size_type num_unassign;
     for (int i = 0; i < parameters_.max_iterations; i++) {
         // Find the strongest neighbor of each row
-        amgxpgm_op->find_strongest_neighbor(diag, agg, strongest_neighbor);
+        amgxpgm_op->find_strongest_neighbor(diag, agg_, strongest_neighbor);
         // Match edges
-        exec->run(amgx_pgm::make_match_edge(agg, strongest_neighbor));
+        exec->run(amgx_pgm::make_match_edge(strongest_neighbor, agg_));
         // Get the numUnAssign
-        exec->run(amgx_pgm::make_count_unagg(agg, &num_assign));
+        exec->run(amgx_pgm::make_count_unagg(agg_, &num_unassign));
         // no new match or all match, the ratio of numUnAssign is lower than
         // parameter
-        if (num_assign == 0) {
+        if (num_unassign == 0) {
             break;
         }
     }
     // Handle the unassign
-    while (num_assign != 0) {
-        amgxpgm_op->assign_to_exist_agg(diag, agg);
-        exec->run(amgx_pgm::make_count_unagg(agg, &num_assign));
+    while (num_unassign != 0) {
+        amgxpgm_op->assign_to_exist_agg(diag, agg_);
+        exec->run(amgx_pgm::make_count_unagg(agg_, &num_unassign));
     }
     size_type num_agg;
     // Renumber the index
-    exec->run(amgx_pgm::make_renumber(agg, &num_agg));
-    amgxpgm_op->amgx_pgm_generate(num_agg, agg);
+    exec->run(amgx_pgm::make_renumber(agg_, &num_agg));
+    amgxpgm_op->amgx_pgm_generate(num_agg, agg_);
     // this->set_coarse_fine();
 }
 

@@ -103,6 +103,18 @@ GKO_INSTANTIATE_FOR_EACH_VALUE_AND_INDEX_TYPE(
 
 
 template <typename IndexType>
+void initial(std::shared_ptr<const ReferenceExecutor> exec,
+             Array<IndexType> &agg)
+{
+    for (size_type i = 0; i < agg.get_num_elems(); i++) {
+        agg.get_data()[i] = -1;
+    }
+}
+
+GKO_INSTANTIATE_FOR_EACH_INDEX_TYPE(GKO_DECLARE_AMGX_PGM_INITIAL_KERNEL);
+
+
+template <typename IndexType>
 void match_edge(std::shared_ptr<const ReferenceExecutor> exec,
                 const Array<IndexType> &strongest_neighbor,
                 Array<IndexType> &agg)
